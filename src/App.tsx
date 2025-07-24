@@ -1,26 +1,29 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react'
+import Header from './components/Header'
+import MovieSearch from './components/MovieSearch'
+import MovieGrid from './components/MovieGrid'
+import { useSearchMovies } from './hooks/useSearchMovies'
 
 function App() {
+  const [searchTerm, setSearchTerm] = useState('')
+  const { data: movies, isLoading, error } = useSearchMovies(searchTerm)
+
+  const handleSearch = (query: string) => {
+    setSearchTerm(query)
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div style={{ backgroundColor: '#121212', minHeight: '100vh', color: '#fff' }}>
+      <Header favoriteCount={0} />
+      <MovieSearch onSearch={handleSearch} />
+
+      {isLoading && <p style={{ textAlign: 'center' }}>Loading...</p>}
+      {error && <p style={{ textAlign: 'center' }}>Error loading movies</p>}
+
+      {movies && <MovieGrid movies={movies} />}
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
+
