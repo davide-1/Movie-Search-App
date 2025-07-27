@@ -1,9 +1,9 @@
 import axios from 'axios';
 
 const API_BASE_URL = 'https://api.themoviedb.org/3';
-const API_KEY = "c660160443a0414055e18c9670a0fdce"; // ✅ v3 API key
+const API_KEY = process.env.REACT_APP_TMDB_API_KEY; 
 
-// ✅ Axios instance with API key as default param
+
 export const movieApi = axios.create({
   baseURL: API_BASE_URL,
   params: {

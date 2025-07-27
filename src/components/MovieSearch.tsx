@@ -84,3 +84,5 @@ export default function MovieSearch({ onSearch }: MovieSearchProps) {
     </Box>
   );
 }
+
+

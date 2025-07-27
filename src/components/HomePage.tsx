@@ -1,25 +1,23 @@
-
-
 import React, { useState } from "react";
 import { useSearchMovies } from "../hooks/useSearchMovies";
 import { useInfiniteMovies } from "../hooks/useInfiniteMovies";
-import { useFavorites } from "../context/FavoritesContext"; 
+import { useFavorites } from "../context/FavoritesContext";
 import MovieSearch from "../components/MovieSearch";
 import MovieGrid from "../components/MovieGrid";
 import MovieRow from "../components/MovieRow";
-
+import { useDebounce } from "../hooks/useDebounce";
 
 export default function HomePage() {
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchInput, setSearchInput] = useState("");
+  const debouncedSearch = useDebounce(searchInput, 300);
 
-  // 🔍 Search logic
   const {
     data: movies,
     isLoading,
     error,
     isFetched,
     refetch,
-  } = useSearchMovies(searchTerm);
+  } = useSearchMovies(debouncedSearch);
 
   const noResults = isFetched && movies?.length === 0;
 
@@ -37,7 +35,6 @@ export default function HomePage() {
     }
   };
 
-  // 🔁 Infinite movie rows
   const {
     data: trendingData,
     fetchNextPage: fetchTrending,
@@ -56,20 +53,23 @@ export default function HomePage() {
     hasNextPage: hasMoreUpcoming,
   } = useInfiniteMovies("upcoming");
 
-  const trending = trendingData?.pages.flatMap(p => p.results) ?? [];
-  const popular = popularData?.pages.flatMap(p => p.results) ?? [];
-  const upcoming = upcomingData?.pages.flatMap(p => p.results) ?? [];
+  const trending = trendingData?.pages.flatMap((p) => p.results) ?? [];
+  const popular = popularData?.pages.flatMap((p) => p.results) ?? [];
+  const upcoming = upcomingData?.pages.flatMap((p) => p.results) ?? [];
 
-  // ❤️ Favorites
   const { favorites } = useFavorites();
 
   return (
     <>
-      <MovieSearch onSearch={setSearchTerm} />
+      <MovieSearch onSearch={setSearchInput} />
 
-      {searchTerm ? (
+      {debouncedSearch ? (
         <>
-          {isLoading && <p style={{ textAlign: "center" }}>Loading...</p>}
+          {isLoading && (
+            <p style={{ textAlign: "center", opacity: 0.8, transition: "opacity 0.3s" }}>
+              🔍 Searching...
+            </p>
+          )}
 
           {error && (
             <div style={{ textAlign: "center", marginTop: "1rem" }}>
@@ -92,13 +92,17 @@ export default function HomePage() {
           )}
 
           {noResults && (
-            <p style={{ textAlign: "center" }}>
-              No results found. Try another search.
-            </p>
+            <p style={{ textAlign: "center" }}>No results found. Try another search.</p>
           )}
 
           {movies && movies.length > 0 && (
-            <MovieGrid movies={movies} isLoading={isLoading} />
+            <>
+              <p style={{ textAlign: "center", marginBottom: "1rem" }}>
+                Found {movies.length} {movies.length === 1 ? "movie" : "movies"}
+              </p>
+              <MovieGrid movies={movies} isLoading={isLoading} />
+              {/* <MovieGrid movies={[]} isLoading={true} /> */}
+            </>
           )}
         </>
       ) : (

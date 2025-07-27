@@ -12,7 +12,7 @@ export default function Header() {
     <AppBar position="static" sx={{ backgroundColor: '#141414' }}>
       <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
         <Typography variant="h6" component={Link} to="/" sx={{ color: 'inherit', textDecoration: 'none' }}>
-          Movie Search
+          Movie App
         </Typography>
 
         <IconButton component={Link} to="/favorites" sx={{ color: 'inherit' }}>

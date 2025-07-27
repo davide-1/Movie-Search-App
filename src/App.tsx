@@ -7,7 +7,7 @@ import FavoritesPage from "./components/FavoritesPage";
 
 function App() {
   return (
-    <div style={{ backgroundColor: "#121212", minHeight: "100vh", color: "#fff" }}>
+    <div style={{ backgroundColor: "#121212", minHeight: "100vh", color: "#fff", margin: 0, padding: 0, overflowX: "hidden", }}>
       <Header />
       <Routes>
         <Route path="/" element={<HomePage />} />
