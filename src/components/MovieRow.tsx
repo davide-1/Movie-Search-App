@@ -33,7 +33,7 @@ export default function MovieRow({
     return () => row.removeEventListener("scroll", handleScroll);
   }, [onLoadMore]);
 
-  // 👻 Skeletons for loading state
+  // Skeletons for loading state
   const skeletons = Array.from({ length: 6 });
 
   return (

@@ -4,6 +4,7 @@ import Grid from '@mui/material/Grid';
 import Skeleton from '@mui/material/Skeleton';
 import MovieCard from './MovieCard';
 
+// Props: array of movie objects and loading state
 type MovieGridProps = {
   movies: any[];
   isLoading: boolean;
@@ -21,7 +22,7 @@ export default function MovieGrid({ movies, isLoading }: MovieGridProps) {
                 key={index}
                 component="div"
                 size={{ xs: 12, sm: 6, md: 4, lg: 3 }}
-                sx={{ display: 'flex', justifyContent: 'center' }}
+                sx={{ display: 'flex', justifyContent: 'center',  }}
               >
                 <Skeleton
                   variant="rectangular"

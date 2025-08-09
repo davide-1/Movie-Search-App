@@ -1,7 +1,7 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 import Header from "./components/Header";
-import HomePage from "./components/HomePage"; // <-- updated
+import HomePage from "./components/HomePage"; 
 import MovieDetails from "./components/MovieDetails";
 import FavoritesPage from "./components/FavoritesPage";
 

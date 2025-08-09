@@ -7,12 +7,16 @@ type Movie = {
   poster_path: string;
 };
 
+
+// Define response structure from TMDB API
 type MovieApiResponse = {
   page: number;
   total_pages: number;
   results: Movie[];
 };
 
+
+// Custom hook to fetch movies of a given type with infinite pagination
 export const useInfiniteMovies = (
   type: 'trending' | 'popular' | 'upcoming'
 ) => {

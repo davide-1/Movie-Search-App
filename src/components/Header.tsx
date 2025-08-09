@@ -6,7 +6,7 @@ import { useFavorites } from '../context/FavoritesContext'
 import { Link } from 'react-router-dom'
 
 export default function Header() {
-  const { favorites } = useFavorites()
+  const { favorites } = useFavorites(); // Get current favorites from context
 
   return (
     <AppBar position="static" sx={{ backgroundColor: '#141414' }}>
@@ -15,6 +15,7 @@ export default function Header() {
           Movie App
         </Typography>
 
+          {/* Favorite icon with badge count */}
         <IconButton component={Link} to="/favorites" sx={{ color: 'inherit' }}>
           <Badge badgeContent={favorites.length} color="error">
             <FavoriteIcon />

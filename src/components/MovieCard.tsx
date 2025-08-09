@@ -27,12 +27,13 @@ export default function MovieCard({ movie }: MovieCardProps) {
 
   const imageUrl = movie.poster_path
     ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
-    : '/placeholder.jpg';
+    : '/placeholder.jpg'; // Fallback image if poster is missing
 
   const releaseYear = movie.release_date
     ? new Date(movie.release_date).getFullYear()
     : 'N/A';
 
+    // Prevent default click navigation if heart icon is clicked
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.preventDefault();
     toggleFavorite(movie);

@@ -8,8 +8,8 @@ import MovieRow from "../components/MovieRow";
 import { useDebounce } from "../hooks/useDebounce";
 
 export default function HomePage() {
-  const [searchInput, setSearchInput] = useState("");
-  const debouncedSearch = useDebounce(searchInput, 300);
+  const [searchInput, setSearchInput] = useState(""); // Input from MovieSearch
+  const debouncedSearch = useDebounce(searchInput, 300);// Add debounce for smooth UX
 
   const {
     data: movies,
@@ -21,6 +21,7 @@ export default function HomePage() {
 
   const noResults = isFetched && movies?.length === 0;
 
+  // Map API errors to user-friendly messages
   const getErrorMessage = () => {
     if (!error?.response) return "Network error. Please check your connection.";
     switch (error.response.status) {
@@ -35,6 +36,7 @@ export default function HomePage() {
     }
   };
 
+  // Infinite queries for each movie category
   const {
     data: trendingData,
     fetchNextPage: fetchTrending,

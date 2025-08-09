@@ -20,9 +20,9 @@ import { useFavorites } from '../context/FavoritesContext'
 export default function MovieDetails() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const { data: movie, isLoading, error } = useMovieDetails(id!)
-  const { favorites, toggleFavorite } = useFavorites()
-  const isFavorite = favorites.some(fav => fav.id === movie?.id)
+  const { data: movie, isLoading, error } = useMovieDetails(id!)// Fetch movie data with React Query
+  const { favorites, toggleFavorite } = useFavorites() // Access global favorites state
+  const isFavorite = favorites.some(fav => fav.id === movie?.id) // Check if this movie is in favorites
 
   if (isLoading) {
     return (

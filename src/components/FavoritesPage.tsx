@@ -1,11 +1,12 @@
 import React from 'react'
 import { Typography, Box } from '@mui/material'
 import { useFavorites } from '../context/FavoritesContext'
-import MovieGrid from './MovieGrid'
+import MovieGrid from './MovieGrid' // Reuse existing grid layout for display
 
 export default function FavoritesPage() {
-  const { favorites } = useFavorites()
+  const { favorites } = useFavorites() // Get favorite movi
 
+  // If no favorites, show an empty state message
   if (favorites.length === 0) {
     return (
       <Box mt={4} textAlign="center">
