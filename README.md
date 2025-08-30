@@ -15,6 +15,7 @@ Users can search for movies, view detailed information, and manage a list of fav
 - 💡 **Debounced search** for better performance
 - 📦 **State management** with React Query + useState/useReducer
 - 🎥 **TMDB integration** for real-time movie data
+- 🤖 **AI “Ask about this movie” chat** using **WebLLM** (runs **in the browser**)
 
 ---
 
@@ -25,6 +26,7 @@ Users can search for movies, view detailed information, and manage a list of fav
 - **React Hook Form**
 - **React Query (TanStack Query)**
 - **TMDB API**
+- **WebLLM** (in-browser LLM inference)
 
 ---
 
