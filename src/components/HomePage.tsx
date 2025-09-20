@@ -6,6 +6,7 @@ import MovieSearch from "../components/MovieSearch";
 import MovieGrid from "../components/MovieGrid";
 import MovieRow from "../components/MovieRow";
 import { useDebounce } from "../hooks/useDebounce";
+import FeaturedHero from "./FeaturedHero";
 
 export default function HomePage() {
   const [searchInput, setSearchInput] = useState(""); // Input from MovieSearch
@@ -64,6 +65,7 @@ export default function HomePage() {
   return (
     <>
       <MovieSearch onSearch={setSearchInput} />
+      <FeaturedHero />
 
       {debouncedSearch ? (
         <>
