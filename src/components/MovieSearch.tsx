@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import {
@@ -63,7 +62,9 @@ export default function MovieSearch({ onSearch }: MovieSearchProps) {
             freeSolo
             fullWidth
             options={options}
-            getOptionLabel={(opt) => (typeof opt === "string" ? opt : opt.label)}
+            getOptionLabel={(opt) =>
+              typeof opt === "string" ? opt : opt.label
+            }
             isOptionEqualToValue={(a, b) => a.id === b.id}
             loading={isLoading}
             inputValue={inputValue}
@@ -87,7 +88,9 @@ export default function MovieSearch({ onSearch }: MovieSearchProps) {
               }
             }}
             noOptionsText={
-              inputValue.length < 2 ? "Type at least 2 characters" : "No matches"
+              inputValue.length < 2
+                ? "Type at least 2 characters"
+                : "No matches"
             }
             sx={{
               width: "100%",
@@ -101,7 +104,7 @@ export default function MovieSearch({ onSearch }: MovieSearchProps) {
               "& .MuiInputBase-input": { color: "white" },
               "& .MuiInputLabel-root": { color: "white" },
               "& .MuiAutocomplete-clearIndicator": {
-                color: "#b0b0b0", 
+                color: "#b0b0b0",
                 "&:hover": { color: "#ffffff" },
               },
             }}
@@ -162,7 +165,18 @@ export default function MovieSearch({ onSearch }: MovieSearchProps) {
         type="submit"
         variant="contained"
         size="small"
-        sx={{ width: { xs: "100%", sm: "auto" }, minWidth: 100 }}
+        sx={{
+          width: { xs: "100%", sm: "auto" },
+          minWidth: 100,
+          bgcolor: "rgba(109,109,110,0.7)", // Netflix grey
+          color: "white",
+          fontWeight: 600,
+          textTransform: "none",
+          borderRadius: "999px",
+          "&:hover": {
+            bgcolor: "rgba(109,109,110,0.9)", // darker grey on hover
+          },
+        }}
       >
         Search
       </Button>
