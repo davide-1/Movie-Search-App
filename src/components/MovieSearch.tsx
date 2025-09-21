@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import {
@@ -12,26 +13,54 @@ import { useSearchSuggestions } from "../hooks/useSearchSuggestions";
 type FormValues = { query: string };
 type Suggestion = { id: number | string; label: string };
 
-type MovieSearchProps = { onSearch: (query: string) => void };
+type MovieSearchProps = {
+  onSearch: (query: string) => void;
+  defaultValue?: string; // prefill from ?q=
+};
 
-export default function MovieSearch({ onSearch }: MovieSearchProps) {
+export default function MovieSearch({ onSearch, defaultValue = "" }: MovieSearchProps) {
   const {
     control,
     handleSubmit,
     setValue,
     getValues,
     reset,
-    formState: { errors },
-  } = useForm<FormValues>({ defaultValues: { query: "" } });
+  } = useForm<FormValues>({ defaultValues: { query: defaultValue } });
 
-  const [inputValue, setInputValue] = useState("");
-  const { data: options = [], isLoading } = useSearchSuggestions(inputValue);
+  const [inputValue, setInputValue] = useState<string>(defaultValue);
+
+  // Always pass a string to the hook
+  const { data: rawOptions = [], isLoading } = useSearchSuggestions(inputValue || "");
+
+  // 1) Normalize to { id, label }
+  const normalized: Suggestion[] = rawOptions.map((opt: any, i: number) =>
+    typeof opt === "string"
+      ? { id: `s-${i}-${opt.toLowerCase()}`, label: opt }
+      : {
+          id:
+            opt.id ??
+            `o-${i}-${String(opt.label ?? opt.title ?? "").toLowerCase()}`,
+          label:
+            typeof opt.label === "string"
+              ? opt.label
+              : String(opt.label ?? opt.title ?? ""),
+        }
+  );
+
+  // 2) Case-insensitive de-duplication by label
+  const seen = new Set<string>();
+  const options: Suggestion[] = normalized.filter(({ label }) => {
+    const k = label.trim().toLowerCase();
+    if (seen.has(k)) return false;
+    seen.add(k);
+    return true;
+  });
 
   const onSubmit = (data: FormValues) => {
-    const q = data.query.trim();
+    const q = (data.query ?? "").trim();
     if (!q) return;
     onSearch(q);
-    reset();
+    reset({ query: "" });
     setInputValue("");
   };
 
@@ -61,11 +90,23 @@ export default function MovieSearch({ onSearch }: MovieSearchProps) {
           <Autocomplete<Suggestion, false, false, true>
             freeSolo
             fullWidth
-            options={options}
+            options={options} // deduped + normalized
             getOptionLabel={(opt) =>
               typeof opt === "string" ? opt : opt.label
             }
-            isOptionEqualToValue={(a, b) => a.id === b.id}
+            isOptionEqualToValue={(a, b) => {
+              const aId = typeof a === "string" ? a : a.id;
+              const bId = typeof b === "string" ? b : (b as any).id;
+              if (aId !== undefined && bId !== undefined) return aId === bId;
+              const aLabel = typeof a === "string" ? a : a.label;
+              const bLabel = typeof b === "string" ? b : (b as any).label;
+              return aLabel === bLabel;
+            }}
+            renderOption={(props, option) => (
+              <li {...props} key={option.id}>
+                {option.label}
+              </li>
+            )}
             loading={isLoading}
             inputValue={inputValue}
             onInputChange={(_, v) => {
@@ -82,7 +123,7 @@ export default function MovieSearch({ onSearch }: MovieSearchProps) {
                 const q = (getValues("query") || "").trim();
                 if (q) {
                   onSearch(q);
-                  reset();
+                  reset({ query: "" });
                   setInputValue("");
                 }
               }
@@ -95,17 +136,64 @@ export default function MovieSearch({ onSearch }: MovieSearchProps) {
             sx={{
               width: "100%",
               maxWidth: { xs: "100%", sm: 300 },
+
+              // ==== Dark / Netflix-like input styling ====
+              // Text & label colors
+              "& .MuiInputBase-input": { color: "white" },
+              "& .MuiInputLabel-root": { color: "rgba(255,255,255,0.7)" },
+              "& .MuiInputLabel-root.Mui-focused": { color: "rgba(255,255,255,0.85)" },
+
+              // Outlined border states
               "& .MuiOutlinedInput-root": {
                 color: "white",
-                "& fieldset": { borderColor: "white" },
-                "&:hover fieldset": { borderColor: "#90caf9" },
-                "&.Mui-focused fieldset": { borderColor: "#1976d2" },
+                // Remove blue focus glow
+                boxShadow: "none",
+                "&:hover": { boxShadow: "none" },
+                "&.Mui-focused": { boxShadow: "none" },
+
+                // Border colors
+                "& fieldset": {
+                  borderColor: "rgba(255,255,255,0.3)",   // default border
+                },
+                "&:hover fieldset": {
+                  borderColor: "rgba(255,255,255,0.5)",   // hover border
+                },
+                "&.Mui-focused fieldset": {
+                  borderColor: "rgba(255,255,255,0.85)",  // focus border (no blue)
+                },
               },
-              "& .MuiInputBase-input": { color: "white" },
-              "& .MuiInputLabel-root": { color: "white" },
+
+              // Some browsers add an outline to the input element itself—kill it
+              "& input": { outline: "none !important" },
+
+              // Clear icon color
               "& .MuiAutocomplete-clearIndicator": {
                 color: "#b0b0b0",
                 "&:hover": { color: "#ffffff" },
+              },
+            }}
+            slotProps={{
+              popper: { sx: { zIndex: 1300 } },
+              paper: {
+                sx: {
+                  bgcolor: "#0b0b0b",
+                  color: "white",
+                  border: "1px solid rgba(255,255,255,0.15)",
+                },
+              },
+              listbox: {
+                sx: {
+                  scrollbarWidth: "none",
+                  "&::-webkit-scrollbar": { display: "none" },
+                  "& .MuiAutocomplete-option": {
+                    "&.Mui-focused": {
+                      backgroundColor: "rgba(144,202,249,0.15)",
+                    },
+                    "&[aria-selected='true']": {
+                      backgroundColor: "rgba(25,118,210,0.25)",
+                    },
+                  },
+                },
               },
             }}
             renderInput={(params) => (
@@ -120,9 +208,10 @@ export default function MovieSearch({ onSearch }: MovieSearchProps) {
                 sx={{
                   "& .MuiFormHelperText-root": { color: "#f44336" },
                 }}
-                // ✅ This is still the correct way to handle adornments in renderInput
                 InputProps={{
                   ...params.InputProps,
+                  // Ensure no default blue ring sneaks in
+                  style: { outline: "none" },
                   endAdornment: (
                     <>
                       {isLoading ? <CircularProgress size={20} /> : null}
@@ -132,31 +221,6 @@ export default function MovieSearch({ onSearch }: MovieSearchProps) {
                 }}
               />
             )}
-            slotProps={{
-              popper: { sx: { zIndex: 1300 } },
-              paper: {
-                sx: {
-                  bgcolor: "#0b0b0b",
-                  color: "white",
-                  border: "1px solid #90caf9",
-                },
-              },
-              listbox: {
-                sx: {
-                  // Hide scrollbar
-                  scrollbarWidth: "none",
-                  "&::-webkit-scrollbar": { display: "none" },
-                  "& .MuiAutocomplete-option": {
-                    "&.Mui-focused": {
-                      backgroundColor: "rgba(144,202,249,0.15)",
-                    },
-                    "&[aria-selected='true']": {
-                      backgroundColor: "rgba(25,118,210,0.25)",
-                    },
-                  },
-                },
-              },
-            }}
           />
         )}
       />
@@ -168,13 +232,13 @@ export default function MovieSearch({ onSearch }: MovieSearchProps) {
         sx={{
           width: { xs: "100%", sm: "auto" },
           minWidth: 100,
-          bgcolor: "rgba(109,109,110,0.7)", // Netflix grey
+          bgcolor: "rgba(109,109,110,0.7)",
           color: "white",
           fontWeight: 600,
           textTransform: "none",
           borderRadius: "999px",
           "&:hover": {
-            bgcolor: "rgba(109,109,110,0.9)", // darker grey on hover
+            bgcolor: "rgba(109,109,110,0.9)",
           },
         }}
       >
